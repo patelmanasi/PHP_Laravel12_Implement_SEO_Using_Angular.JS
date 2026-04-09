@@ -1,17 +1,30 @@
 <?php
+
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SeoController;
 
-// Home Route
+// HOME
 Route::get('/', [SeoController::class, 'show'])->name('home');
 
-// Angular Catch-All (ONLY for frontend routing if needed)
-Route::get('/app/{any}', [SeoController::class, 'index'])
-    ->where('any', '.*');
+// ADMIN PANEL - put this **before** the slug route
+Route::prefix('admin')->group(function () {
+    Route::get('/', [SeoController::class, 'index'])->name('admin.index');
+    Route::get('/create', [SeoController::class, 'create']);
+    Route::post('/store', [SeoController::class, 'store']);
 
+    Route::get('/edit/{id}', [SeoController::class, 'edit']);
+    Route::post('/update/{id}', [SeoController::class, 'update']);
 
+    Route::get('/delete/{id}', [SeoController::class, 'destroy']);
 
-// SEO pages (about-us, services etc.)
+    Route::get('/toggle/{id}', [SeoController::class, 'toggle']);
+
+    Route::get('/trash', [SeoController::class, 'trash']);
+    Route::get('/restore/{id}', [SeoController::class, 'restore']);
+    Route::get('/force-delete/{id}', [SeoController::class, 'forceDelete']);
+});
+
+// SEO Dynamic Pages (about-us, services, etc.) - **last**
 Route::get('/{slug}', [SeoController::class, 'show'])
     ->where('slug', '[A-Za-z0-9\-]+')
     ->name('seo.page');
